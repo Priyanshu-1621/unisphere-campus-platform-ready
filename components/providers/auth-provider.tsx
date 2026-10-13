@@ -44,8 +44,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isDemoMode, setIsDemoMode] = useState(false);
 
   const fetchProfile = useCallback(async (uid: string) => {
-    if (!isSupabaseConfigured) return;
-    const { data } = await sb!
+    if (!isSupabaseConfigured || !sb) return;
+    const { data } = await sb
       .from('profiles')
       .select('*')
       .eq('id', uid)
@@ -56,12 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || !sb) {
       setLoading(false);
       return;
     }
 
-    sb!.auth.getSession().then(({ data: { session: s } }) => {
+    sb.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
 
-    const { data: authListener } = sb!.auth.onAuthStateChange((_event, s) => {
+    const { data: authListener } = sb.auth.onAuthStateChange((_event, s) => {
       (async () => {
         setSession(s);
         setUser(s?.user ?? null);
@@ -90,18 +90,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [fetchProfile]);
 
   const signIn = async (email: string, password: string) => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || !sb) {
       return { error: 'Supabase is not configured. Use Demo Mode to explore the app.' };
     }
-    const { error } = await sb!.auth.signInWithPassword({ email, password });
+    const { error } = await sb.auth.signInWithPassword({ email, password });
     return { error: error?.message ?? null };
   };
 
   const signUp = async (data: SignUpData) => {
-    if (!isSupabaseConfigured) {
+    if (!isSupabaseConfigured || !sb) {
       return { error: 'Supabase is not configured. Use Demo Mode to explore the app.' };
     }
-    const { data: authData, error } = await sb!.auth.signUp({
+
+    const { data: authData, error } = await sb.auth.signUp({
       email: data.email,
       password: data.password,
       options: {
@@ -120,7 +121,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) return { error: error.message };
 
     if (authData.user) {
-      const { error: profileError } = await sb!.from('profiles').insert({
+      const { error: profileError } = await sb.from('profiles').insert({
         id: authData.user.id,
         email: data.email,
         full_name: data.full_name,
@@ -129,7 +130,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         batch_start: parseInt(data.batch),
         current_year: parseInt(data.year),
         semester: parseInt(data.semester),
-        section: data.section,
+        section: data.section.trim(),
         role: 'student',
         is_verified_contributor: false,
         interests: [],
@@ -137,7 +138,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         achievements: [],
         certifications: [],
       });
-      if (profileError) return { error: profileError.message };
+      if (profileError) {
+        return { error: `Account created but profile setup failed: ${profileError.message}. Please sign in to continue.` };
+      }
     }
 
     return { error: null };
@@ -148,8 +151,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile(null);
     setUser(null);
     setSession(null);
-    if (isSupabaseConfigured) {
-      await sb!.auth.signOut();
+    if (isSupabaseConfigured && sb) {
+      await sb.auth.signOut();
     }
   };
 

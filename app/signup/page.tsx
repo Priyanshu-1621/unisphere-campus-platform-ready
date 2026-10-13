@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { User, Mail, Lock, ArrowRight, Eye, EyeOff, Sparkles } from 'lucide-react';
+import { User, Mail, Lock, ArrowRight, Eye, EyeOff, Sparkles, Hash } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,9 +18,19 @@ import {
 import { useAuth } from '@/components/providers/auth-provider';
 import { AuthBackground, AuthCard } from '@/components/layout/auth-layout';
 
-const branches = ['Computer Science & Engineering', 'Information Technology', 'Electronics & Communication', 'Electrical Engineering', 'Mechanical Engineering', 'Civil Engineering', 'Chemical Engineering'];
-const courses = ['B.Tech', 'B.E', 'M.Tech', 'BCA', 'MCA', 'B.Sc', 'M.Sc'];
-const sections = ['A', 'B', 'C', 'D'];
+const branches = [
+  'Computer Science & Engineering',
+  'Information Technology',
+  'Electronics & Communication',
+  'Electrical Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Chemical Engineering',
+  'Aerospace Engineering',
+  'Biotechnology',
+  'Other',
+];
+const courses = ['B.Tech', 'B.E', 'M.Tech', 'BCA', 'MCA', 'B.Sc', 'M.Sc', 'B.Com', 'B.A', 'Other'];
 
 export default function SignupPage() {
   const router = useRouter();
@@ -40,6 +50,15 @@ export default function SignupPage() {
     section: '',
   });
 
+  const batchYears = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    const years: number[] = [];
+    for (let y = currentYear - 6; y <= currentYear + 5; y++) {
+      years.push(y);
+    }
+    return years;
+  }, []);
+
   const setField = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
@@ -47,8 +66,19 @@ export default function SignupPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const trimmedSection = form.section.trim();
+    if (trimmedSection.length === 0) {
+      setError('Please enter your section.');
+      return;
+    }
+    if (trimmedSection.length > 20) {
+      setError('Section name must be 20 characters or fewer.');
+      return;
+    }
+
     setLoading(true);
-    const { error } = await signUp(form);
+    const { error } = await signUp({ ...form, section: trimmedSection });
     setLoading(false);
     if (error) {
       setError(error);
@@ -123,6 +153,7 @@ export default function SignupPage() {
                     value={form.password}
                     onChange={(e) => setField('password', e.target.value)}
                     className="pl-10 pr-10"
+                    minLength={6}
                     required
                   />
                   <button
@@ -159,11 +190,11 @@ export default function SignupPage() {
 
             <div className="grid sm:grid-cols-3 gap-4">
               <div className="space-y-2">
-                <Label>Batch Start</Label>
+                <Label>Admission Year</Label>
                 <Select value={form.batch} onValueChange={(v) => setField('batch', v)}>
                   <SelectTrigger><SelectValue placeholder="Year" /></SelectTrigger>
                   <SelectContent>
-                    {[2020, 2021, 2022, 2023, 2024].map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+                    {batchYears.map((y) => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -172,7 +203,7 @@ export default function SignupPage() {
                 <Select value={form.year} onValueChange={(v) => setField('year', v)}>
                   <SelectTrigger><SelectValue placeholder="Year" /></SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4].map((y) => <SelectItem key={y} value={String(y)}>{y}st Year</SelectItem>)}
+                    {[1, 2, 3, 4, 5].map((y) => <SelectItem key={y} value={String(y)}>Year {y}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
@@ -181,20 +212,28 @@ export default function SignupPage() {
                 <Select value={form.semester} onValueChange={(v) => setField('semester', v)}>
                   <SelectTrigger><SelectValue placeholder="Sem" /></SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => <SelectItem key={s} value={String(s)}>Sem {s}</SelectItem>)}
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => <SelectItem key={s} value={String(s)}>Sem {s}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label>Section</Label>
-              <Select value={form.section} onValueChange={(v) => setField('section', v)}>
-                <SelectTrigger><SelectValue placeholder="Select section" /></SelectTrigger>
-                <SelectContent>
-                  {sections.map((s) => <SelectItem key={s} value={s}>Section {s}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <Label htmlFor="section">Section</Label>
+              <div className="relative">
+                <Hash className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="section"
+                  type="text"
+                  placeholder="e.g. A, B, CSE-A, C-1"
+                  value={form.section}
+                  onChange={(e) => setField('section', e.target.value)}
+                  className="pl-10"
+                  maxLength={20}
+                  required
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">Type your section name as used by your department.</p>
             </div>
 
             {error && (
