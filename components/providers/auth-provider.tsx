@@ -15,7 +15,7 @@ interface AuthContextValue {
   loading: boolean;
   isDemoMode: boolean;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
-  signUp: (data: SignUpData) => Promise<{ error: string | null }>;
+  signUp: (data: SignUpData) => Promise<{ error: string | null; needsConfirmation: boolean }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
   enterDemoMode: () => void;
@@ -55,6 +55,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  const ensureProfile = useCallback(async (uid: string) => {
+    if (!isSupabaseConfigured || !sb) return;
+    // Try calling the recovery function, then fetch
+    await sb.rpc('ensure_profile_exists');
+    await fetchProfile(uid);
+  }, [fetchProfile]);
+
   useEffect(() => {
     if (!isSupabaseConfigured || !sb) {
       setLoading(false);
@@ -65,7 +72,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(s);
       setUser(s?.user ?? null);
       if (s?.user) {
-        fetchProfile(s.user.id).finally(() => setLoading(false));
+        fetchProfile(s.user.id).then(() => {
+          // If no profile found, try recovery
+          setProfile((current) => {
+            if (!current) {
+              ensureProfile(s.user.id);
+            }
+            return current;
+          });
+        }).finally(() => setLoading(false));
       } else {
         setLoading(false);
       }
@@ -77,6 +92,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(s?.user ?? null);
         if (s?.user) {
           await fetchProfile(s.user.id);
+          // Recovery: if still no profile, create one
+          setProfile((current) => {
+            if (!current) {
+              ensureProfile(s.user.id);
+            }
+            return current;
+          });
         } else {
           setProfile(null);
         }
@@ -87,21 +109,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, [fetchProfile]);
+  }, [fetchProfile, ensureProfile]);
 
   const signIn = async (email: string, password: string) => {
     if (!isSupabaseConfigured || !sb) {
       return { error: 'Supabase is not configured. Use Demo Mode to explore the app.' };
     }
     const { error } = await sb.auth.signInWithPassword({ email, password });
-    return { error: error?.message ?? null };
+    if (error) {
+      if (error.message.includes('Email not confirmed')) {
+        return { error: 'Please confirm your email before signing in. Check your inbox for a confirmation link.' };
+      }
+      return { error: error.message };
+    }
+    return { error: null };
   };
 
   const signUp = async (data: SignUpData) => {
     if (!isSupabaseConfigured || !sb) {
-      return { error: 'Supabase is not configured. Use Demo Mode to explore the app.' };
+      return { error: 'Supabase is not configured. Use Demo Mode to explore the app.', needsConfirmation: false };
     }
 
+    // The trigger on auth.users will auto-create the profile from metadata.
+    // We do NOT insert into profiles here — the trigger handles it.
     const { data: authData, error } = await sb.auth.signUp({
       email: data.email,
       password: data.password,
@@ -118,32 +148,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
 
-    if (error) return { error: error.message };
-
-    if (authData.user) {
-      const { error: profileError } = await sb.from('profiles').insert({
-        id: authData.user.id,
-        email: data.email,
-        full_name: data.full_name,
-        branch: data.branch,
-        course: data.course,
-        batch_start: parseInt(data.batch),
-        current_year: parseInt(data.year),
-        semester: parseInt(data.semester),
-        section: data.section.trim(),
-        role: 'student',
-        is_verified_contributor: false,
-        interests: [],
-        skills: [],
-        achievements: [],
-        certifications: [],
-      });
-      if (profileError) {
-        return { error: `Account created but profile setup failed: ${profileError.message}. Please sign in to continue.` };
+    if (error) {
+      if (error.message.includes('already registered')) {
+        return { error: 'An account with this email already exists. Try signing in instead.', needsConfirmation: false };
       }
+      return { error: error.message, needsConfirmation: false };
     }
 
-    return { error: null };
+    // Check if email confirmation is required
+    const needsConfirmation = !authData.session;
+
+    if (needsConfirmation) {
+      return {
+        error: null,
+        needsConfirmation: true,
+      };
+    }
+
+    // If we got a session immediately (email confirmation disabled),
+    // the trigger already created the profile. Fetch it.
+    if (authData.session && authData.user) {
+      await fetchProfile(authData.user.id);
+    }
+
+    return { error: null, needsConfirmation: false };
   };
 
   const signOut = async () => {

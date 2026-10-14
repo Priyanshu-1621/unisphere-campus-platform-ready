@@ -38,6 +38,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -78,10 +79,12 @@ export default function SignupPage() {
     }
 
     setLoading(true);
-    const { error } = await signUp({ ...form, section: trimmedSection });
+    const result = await signUp({ ...form, section: trimmedSection });
     setLoading(false);
-    if (error) {
-      setError(error);
+    if (result.error) {
+      setError(result.error);
+    } else if (result.needsConfirmation) {
+      setShowConfirmation(true);
     } else {
       router.push('/home');
     }
@@ -104,6 +107,7 @@ export default function SignupPage() {
           <span className="font-display text-2xl font-bold tracking-tight">UniSphere</span>
         </Link>
 
+        {!showConfirmation && (
         <AuthCard>
           <h1 className="font-display text-2xl font-bold text-center">Create your account</h1>
           <p className="mt-2 text-sm text-muted-foreground text-center">
@@ -277,6 +281,33 @@ export default function SignupPage() {
             </Link>
           </p>
         </AuthCard>
+        )}
+
+        {showConfirmation && (
+          <AuthCard>
+            <div className="text-center">
+              <div className="mx-auto h-12 w-12 rounded-full bg-accent/10 flex items-center justify-center mb-4">
+                <Mail className="h-6 w-6 text-accent" />
+              </div>
+              <h2 className="font-display text-xl font-bold">Check your email</h2>
+              <p className="mt-3 text-sm text-muted-foreground">
+                We sent a confirmation link to <strong className="text-foreground">{form.email}</strong>.
+                Click the link to activate your account, then sign in.
+              </p>
+              <Link href="/login">
+                <Button className="w-full mt-6 rounded-full">
+                  Go to Sign In
+                </Button>
+              </Link>
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="mt-3 text-sm text-muted-foreground hover:text-foreground"
+              >
+                Back to signup
+              </button>
+            </div>
+          </AuthCard>
+        )}
 
         <p className="mt-6 text-center text-xs text-muted-foreground/60">
           UniSphere is an unofficial student platform.
