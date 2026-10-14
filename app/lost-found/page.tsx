@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { demoLostFound, formatRelativeTime } from '@/lib/demo-data';
+import { useLostFound, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 
 const typeFilters = [
   { value: 'all', label: 'All' },
@@ -46,15 +47,18 @@ export default function LostFoundPage() {
   const [status, setStatus] = useState('all');
   const [search, setSearch] = useState('');
 
+  const lostFoundQuery = useLostFound();
+  const allLostFound = isSupabaseConfigured && lostFoundQuery.data.length > 0 ? lostFoundQuery.data : demoLostFound;
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return demoLostFound.filter((item) => {
+    return allLostFound.filter((item) => {
       if (type !== 'all' && item.type !== type) return false;
       if (status !== 'all' && item.status !== status) return false;
       if (q && !item.title.toLowerCase().includes(q) && !item.description.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [type, status, search]);
+  }, [type, status, search, allLostFound]);
 
   return (
     <AppShell>

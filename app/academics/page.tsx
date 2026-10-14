@@ -12,6 +12,7 @@ import { EmptyState } from '@/components/shared/states';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { demoResources } from '@/lib/demo-data';
+import { useResources, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 
 const branchFilters = [
   { value: 'all', label: 'All' },
@@ -45,16 +46,19 @@ export default function AcademicsPage() {
   const [resourceType, setResourceType] = useState('all');
   const [search, setSearch] = useState('');
 
+  const resourcesQuery = useResources();
+  const allResources = isSupabaseConfigured && resourcesQuery.data.length > 0 ? resourcesQuery.data : demoResources;
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return demoResources.filter((r) => {
+    return allResources.filter((r) => {
       if (branch !== 'all' && r.branch !== branch) return false;
       if (semester !== 'all' && r.semester !== Number(semester)) return false;
       if (resourceType !== 'all' && r.resource_type !== resourceType) return false;
       if (q && !r.title.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [branch, semester, resourceType, search]);
+  }, [branch, semester, resourceType, search, allResources]);
 
   return (
     <AppShell>

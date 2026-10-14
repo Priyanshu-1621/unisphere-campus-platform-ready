@@ -10,6 +10,7 @@ import { OpportunityCard } from '@/components/cards/opportunity-card';
 import { EmptyState } from '@/components/shared/states';
 import { Button } from '@/components/ui/button';
 import { demoOpportunities } from '@/lib/demo-data';
+import { useOpportunities, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 
 const categoryFilters = [
   { value: 'all', label: 'All' },
@@ -28,11 +29,14 @@ export default function OpportunitiesPage() {
   const [category, setCategory] = useState('all');
   const [sort, setSort] = useState<SortMode>('deadline');
 
+  const opportunitiesQuery = useOpportunities();
+  const allOpportunities = isSupabaseConfigured && opportunitiesQuery.data.length > 0 ? opportunitiesQuery.data : demoOpportunities;
+
   const filtered = useMemo(() => {
     const items =
       category === 'all'
-        ? [...demoOpportunities]
-        : demoOpportunities.filter((o) => o.category === category);
+        ? [...allOpportunities]
+        : allOpportunities.filter((o) => o.category === category);
 
     return items.sort((a, b) => {
       if (sort === 'deadline') {
@@ -40,7 +44,7 @@ export default function OpportunitiesPage() {
       }
       return b.created_at.localeCompare(a.created_at);
     });
-  }, [category, sort]);
+  }, [category, sort, allOpportunities]);
 
   return (
     <AppShell>

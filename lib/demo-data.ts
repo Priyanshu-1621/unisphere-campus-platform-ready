@@ -700,7 +700,7 @@ export const demoAnnouncements: Announcement[] = [
 ];
 
 export function formatRelativeTime(date: string): string {
-  const now = new Date('2024-10-06T12:00:00Z');
+  const now = new Date();
   const target = new Date(date);
   const diffMs = now.getTime() - target.getTime();
   const diffSec = Math.floor(diffMs / 1000);
@@ -723,7 +723,7 @@ export function formatFileSize(bytes: number): string {
 }
 
 export function getDaysUntil(date: string): number {
-  const now = new Date('2024-10-06T12:00:00Z');
+  const now = new Date();
   const target = new Date(date);
   return Math.ceil((target.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 }

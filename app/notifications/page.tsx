@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/shared/states';
 import { demoNotifications, formatRelativeTime } from '@/lib/demo-data';
+import { useNotifications, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 import type { Notification } from '@/types';
 
 const typeConfig: Record<Notification['type'], { icon: typeof Bell; color: string; bg: string }> = {
@@ -26,7 +27,9 @@ const typeConfig: Record<Notification['type'], { icon: typeof Bell; color: strin
 };
 
 export default function NotificationsPage() {
-  const [notifications, setNotifications] = useState<Notification[]>(demoNotifications);
+  const notificationsQuery = useNotifications();
+  const initialNotifications = isSupabaseConfigured && notificationsQuery.data.length > 0 ? notificationsQuery.data : demoNotifications;
+  const [notifications, setNotifications] = useState<Notification[]>(initialNotifications);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
   const filtered = filter === 'unread' ? notifications.filter((n) => !n.is_read) : notifications;

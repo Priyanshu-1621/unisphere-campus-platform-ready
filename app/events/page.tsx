@@ -9,6 +9,7 @@ import { RevealUp } from '@/components/animation/animation-utils';
 import { EventCard } from '@/components/cards/event-card';
 import { EmptyState } from '@/components/shared/states';
 import { demoEvents } from '@/lib/demo-data';
+import { useEvents, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 
 const categoryFilters = [
   { value: 'all', label: 'All' },
@@ -24,10 +25,13 @@ const categoryFilters = [
 export default function EventsPage() {
   const [category, setCategory] = useState('all');
 
+  const eventsQuery = useEvents();
+  const allEvents = isSupabaseConfigured && eventsQuery.data.length > 0 ? eventsQuery.data : demoEvents;
+
   const filtered = useMemo(() => {
-    if (category === 'all') return demoEvents;
-    return demoEvents.filter((e) => e.category === category);
-  }, [category]);
+    if (category === 'all') return allEvents;
+    return allEvents.filter((e) => e.category === category);
+  }, [category, allEvents]);
 
   return (
     <AppShell>

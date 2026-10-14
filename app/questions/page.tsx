@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { demoQuestions } from '@/lib/demo-data';
+import { useQuestions, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 
 const categoryFilters = [
   { value: 'all', label: 'All' },
@@ -41,14 +42,17 @@ export default function QuestionsPage() {
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
 
+  const questionsQuery = useQuestions();
+  const allQuestions = isSupabaseConfigured && questionsQuery.data.length > 0 ? questionsQuery.data : demoQuestions;
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return demoQuestions.filter((question) => {
+    return allQuestions.filter((question) => {
       if (category !== 'all' && question.category !== category) return false;
       if (q && !question.title.toLowerCase().includes(q) && !question.body.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [category, search]);
+  }, [category, search, allQuestions]);
 
   return (
     <AppShell>

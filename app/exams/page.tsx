@@ -10,6 +10,7 @@ import { EmptyState } from '@/components/shared/states';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { demoExams, getDaysUntil } from '@/lib/demo-data';
+import { useExams, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 
 const examTypeFilters = [
   { value: 'all', label: 'All' },
@@ -29,9 +30,12 @@ const examTypeLabels: Record<string, string> = {
 export default function ExamsPage() {
   const [examType, setExamType] = useState('all');
 
+  const examsQuery = useExams();
+  const allExams = isSupabaseConfigured && examsQuery.data.length > 0 ? examsQuery.data : demoExams;
+
   const filtered = useMemo(() => {
-    return demoExams.filter((e) => examType === 'all' || e.exam_type === examType);
-  }, [examType]);
+    return allExams.filter((e) => examType === 'all' || e.exam_type === examType);
+  }, [examType, allExams]);
 
   const upcoming = filtered.filter((e) => getDaysUntil(e.exam_date) >= 0).sort((a, b) => getDaysUntil(a.exam_date) - getDaysUntil(b.exam_date));
   const nextExam = upcoming[0];

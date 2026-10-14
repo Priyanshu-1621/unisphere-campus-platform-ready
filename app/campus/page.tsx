@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { demoLocations } from '@/lib/demo-data';
+import { useCampusLocations, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 import type { CampusLocation } from '@/types';
 
 const categoryFilters = [
@@ -50,16 +51,18 @@ const categoryColors: Record<string, string> = {
 export default function CampusPage() {
   const [category, setCategory] = useState('all');
   const [search, setSearch] = useState('');
-  const [selected, setSelected] = useState<CampusLocation | null>(demoLocations[0] ?? null);
+  const locationsQuery = useCampusLocations();
+  const allLocations = isSupabaseConfigured && locationsQuery.data.length > 0 ? locationsQuery.data : demoLocations;
+  const [selected, setSelected] = useState<CampusLocation | null>(allLocations[0] ?? null);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return demoLocations.filter((l) => {
+    return allLocations.filter((l) => {
       if (category !== 'all' && l.category !== category) return false;
       if (q && !l.name.toLowerCase().includes(q) && !l.description.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [category, search]);
+  }, [category, search, allLocations]);
 
   return (
     <AppShell>

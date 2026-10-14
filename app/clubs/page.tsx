@@ -9,6 +9,7 @@ import { RevealUp } from '@/components/animation/animation-utils';
 import { ClubCard } from '@/components/cards/club-card';
 import { EmptyState } from '@/components/shared/states';
 import { demoClubs } from '@/lib/demo-data';
+import { useClubs, isSupabaseConfigured } from '@/lib/hooks/use-supabase-data';
 
 const categoryFilters = [
   { value: 'all', label: 'All' },
@@ -21,10 +22,13 @@ const categoryFilters = [
 export default function ClubsPage() {
   const [category, setCategory] = useState('all');
 
+  const clubsQuery = useClubs();
+  const allClubs = isSupabaseConfigured && clubsQuery.data.length > 0 ? clubsQuery.data : demoClubs;
+
   const filtered = useMemo(() => {
-    if (category === 'all') return demoClubs;
-    return demoClubs.filter((c) => c.category === category);
-  }, [category]);
+    if (category === 'all') return allClubs;
+    return allClubs.filter((c) => c.category === category);
+  }, [category, allClubs]);
 
   return (
     <AppShell>
