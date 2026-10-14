@@ -2,13 +2,13 @@
 
 import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
 const SpatialScene = dynamic(() => import('@/components/3d/spatial-scene').then((m) => m.SpatialScene), {
   ssr: false,
-  loading: () => <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background/50" />,
+  loading: () => <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-surface-1" />,
 });
 
 export function SpatialHero() {
@@ -19,20 +19,21 @@ export function SpatialHero() {
         <SpatialScene className="absolute inset-0" />
       </div>
 
-      {/* Gradient overlays */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-b from-background/40 via-background/20 to-background pointer-events-none" />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-background/60 via-transparent to-background/60 pointer-events-none" />
+      {/* Gradient overlays for readability */}
+      <div className="absolute inset-0 z-10 bg-gradient-to-b from-background/50 via-background/10 to-background pointer-events-none" />
+      <div className="absolute inset-0 z-10 bg-gradient-to-r from-background/70 via-transparent to-background/70 pointer-events-none" />
 
-      {/* Grid pattern */}
-      <div className="absolute inset-0 z-[5] grid-pattern opacity-30 pointer-events-none" />
+      {/* Subtle grid overlay */}
+      <div className="absolute inset-0 z-[5] grid-pattern opacity-20 pointer-events-none" />
 
       {/* Content */}
       <div className="relative z-20 max-w-5xl mx-auto px-6 text-center">
+        {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/50 backdrop-blur-md px-4 py-1.5 mb-8"
+          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/60 backdrop-blur-md px-4 py-1.5 mb-8"
         >
           <span className="relative flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
@@ -43,11 +44,12 @@ export function SpatialHero() {
           </span>
         </motion.div>
 
+        {/* Headline */}
         <motion.h1
-          initial={{ opacity: 0, y: 24 }}
+          initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-          className="font-display text-5xl sm:text-7xl md:text-8xl font-bold tracking-tight text-balance"
+          transition={{ duration: 0.9, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          className="font-display text-5xl sm:text-7xl md:text-[5.5rem] font-bold tracking-tight text-balance leading-[1.05]"
         >
           Your campus,
           <br />
@@ -56,31 +58,33 @@ export function SpatialHero() {
           </span>
         </motion.h1>
 
+        {/* Subtitle */}
         <motion.p
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="mt-8 text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto text-pretty leading-relaxed"
         >
           UniSphere brings academics, events, clubs, resources, opportunities, and student knowledge
           into one premium digital campus experience.
         </motion.p>
 
+        {/* CTAs */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.8, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link href="/home">
+          <Link href="/login">
             <Button size="lg" className="h-12 px-8 text-base rounded-full group">
               Enter UniSphere
-              <ChevronDown className="ml-1 h-4 w-4 -rotate-90 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </Link>
-          <Link href="/campus">
+          <Link href="/signup">
             <Button size="lg" variant="outline" className="h-12 px-8 text-base rounded-full">
-              Explore Campus
+              Create Account
             </Button>
           </Link>
         </motion.div>

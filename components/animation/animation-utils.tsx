@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export function AnimatedCounter({
   value,
@@ -56,11 +56,11 @@ export function Countdown({ targetDate, className = '' }: { targetDate: string; 
 
     const update = () => {
       if (!ref.current) return;
-      const now = new Date('2024-10-06T12:00:00Z').getTime();
+      const now = Date.now();
       const diff = target - now;
 
       if (diff <= 0) {
-        ref.current.innerHTML = '<span class="text-destructive">Overdue</span>';
+        ref.current.innerHTML = '<span class="text-destructive font-medium">Past due</span>';
         return;
       }
 
@@ -119,4 +119,17 @@ export function RevealUp({
       {children}
     </motion.div>
   );
+}
+
+export function useGreeting() {
+  const [greeting, setGreeting] = useState('Good afternoon');
+
+  useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour < 12) setGreeting('Good morning');
+    else if (hour < 17) setGreeting('Good afternoon');
+    else setGreeting('Good evening');
+  }, []);
+
+  return greeting;
 }

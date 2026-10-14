@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    /* Light mode — editorial, architectural, clean */
+    /* Light mode — editorial, warm paper, architectural */
     --background: 40 30% 98%;
     --foreground: 222 30% 12%;
     --card: 0 0% 100%;
@@ -38,41 +38,53 @@
     --grid-color: 210 14% 86%;
     --glow: 199 85% 42%;
     --spatial: 210 20% 94%;
+
+    /* Architectural shadows */
+    --shadow-sm: 0 1px 2px hsl(222 30% 12% / 0.04), 0 1px 3px hsl(222 30% 12% / 0.06);
+    --shadow-md: 0 2px 8px hsl(222 30% 12% / 0.06), 0 1px 3px hsl(222 30% 12% / 0.04);
+    --shadow-lg: 0 8px 24px hsl(222 30% 12% / 0.08), 0 2px 8px hsl(222 30% 12% / 0.04);
+    --shadow-xl: 0 16px 48px hsl(222 30% 12% / 0.1), 0 4px 16px hsl(222 30% 12% / 0.05);
   }
 
   .dark {
-    /* Dark mode — cinematic, deep, spatial, premium */
-    --background: 222 40% 6%;
-    --foreground: 200 15% 92%;
-    --card: 222 35% 9%;
-    --card-foreground: 200 15% 92%;
-    --popover: 222 35% 9%;
-    --popover-foreground: 200 15% 92%;
-    --primary: 199 90% 50%;
-    --primary-foreground: 222 40% 6%;
-    --secondary: 222 25% 14%;
-    --secondary-foreground: 200 15% 92%;
-    --muted: 222 25% 14%;
-    --muted-foreground: 200 10% 58%;
-    --accent: 168 65% 42%;
-    --accent-foreground: 222 40% 6%;
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 200 15% 92%;
-    --border: 222 20% 18%;
-    --input: 222 20% 20%;
-    --ring: 199 90% 50%;
-    --chart-1: 199 90% 50%;
-    --chart-2: 168 65% 42%;
-    --chart-3: 43 85% 55%;
-    --chart-4: 12 72% 55%;
-    --chart-5: 262 55% 60%;
+    /* Dark mode — cinematic, deep blue-black, spatial, premium */
+    --background: 222 44% 5%;
+    --foreground: 200 15% 93%;
+    --card: 222 38% 8%;
+    --card-foreground: 200 15% 93%;
+    --popover: 222 38% 8%;
+    --popover-foreground: 200 15% 93%;
+    --primary: 199 90% 52%;
+    --primary-foreground: 222 44% 5%;
+    --secondary: 222 28% 13%;
+    --secondary-foreground: 200 15% 93%;
+    --muted: 222 28% 13%;
+    --muted-foreground: 200 10% 56%;
+    --accent: 168 65% 44%;
+    --accent-foreground: 222 44% 5%;
+    --destructive: 0 62% 48%;
+    --destructive-foreground: 200 15% 93%;
+    --border: 222 22% 17%;
+    --input: 222 22% 19%;
+    --ring: 199 90% 52%;
+    --chart-1: 199 90% 52%;
+    --chart-2: 168 65% 44%;
+    --chart-3: 43 85% 58%;
+    --chart-4: 12 72% 58%;
+    --chart-5: 262 55% 62%;
 
-    --surface-1: 222 38% 8%;
-    --surface-2: 222 35% 10%;
-    --surface-elevated: 222 32% 11%;
-    --grid-color: 222 20% 16%;
-    --glow: 199 90% 50%;
-    --spatial: 222 30% 12%;
+    --surface-1: 222 40% 7%;
+    --surface-2: 222 36% 9%;
+    --surface-elevated: 222 34% 11%;
+    --grid-color: 222 22% 15%;
+    --glow: 199 90% 52%;
+    --spatial: 222 32% 11%;
+
+    /* Architectural shadows — darker, more atmospheric */
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.2), 0 1px 3px hsl(0 0% 0% / 0.15);
+    --shadow-md: 0 2px 8px hsl(0 0% 0% / 0.25), 0 1px 3px hsl(0 0% 0% / 0.12);
+    --shadow-lg: 0 8px 24px hsl(0 0% 0% / 0.3), 0 2px 8px hsl(0 0% 0% / 0.15);
+    --shadow-xl: 0 16px 48px hsl(0 0% 0% / 0.35), 0 4px 16px hsl(0 0% 0% / 0.2);
   }
 }
 
@@ -82,14 +94,14 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
   }
 }
 
 @layer utilities {
   .font-display {
     font-family: var(--font-display), 'Inter', system-ui, sans-serif;
-    letter-spacing: -0.03em;
+    letter-spacing: -0.035em;
   }
   .text-balance {
     text-wrap: balance;
@@ -103,34 +115,34 @@
   .surface-elevated { background-color: hsl(var(--surface-elevated)); }
 
   .glass {
-    background: hsl(var(--card) / 0.6);
-    backdrop-filter: blur(16px) saturate(1.5);
-    -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    background: hsl(var(--card) / 0.55);
+    backdrop-filter: blur(20px) saturate(1.6);
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
   }
 
   .glass-strong {
     background: hsl(var(--card) / 0.85);
-    backdrop-filter: blur(20px) saturate(1.5);
-    -webkit-backdrop-filter: blur(20px) saturate(1.5);
+    backdrop-filter: blur(24px) saturate(1.6);
+    -webkit-backdrop-filter: blur(24px) saturate(1.6);
   }
 
   .glow-ring {
-    box-shadow: 0 0 0 1px hsl(var(--glow) / 0.15), 0 0 30px -5px hsl(var(--glow) / 0.25);
+    box-shadow: 0 0 0 1px hsl(var(--glow) / 0.12), 0 0 40px -8px hsl(var(--glow) / 0.2);
   }
 
   .text-glow {
-    text-shadow: 0 0 20px hsl(var(--glow) / 0.3);
+    text-shadow: 0 0 24px hsl(var(--glow) / 0.25);
   }
 
   .grid-pattern {
     background-image:
-      linear-gradient(to right, hsl(var(--grid-color) / 0.5) 1px, transparent 1px),
-      linear-gradient(to bottom, hsl(var(--grid-color) / 0.5) 1px, transparent 1px);
-    background-size: 48px 48px;
+      linear-gradient(to right, hsl(var(--grid-color) / 0.4) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--grid-color) / 0.4) 1px, transparent 1px);
+    background-size: 56px 56px;
   }
 
   .dot-pattern {
-    background-image: radial-gradient(hsl(var(--grid-color) / 0.6) 1px, transparent 1px);
+    background-image: radial-gradient(hsl(var(--grid-color) / 0.5) 1px, transparent 1px);
     background-size: 24px 24px;
   }
 
@@ -144,6 +156,17 @@
   .mask-fade-r {
     -webkit-mask-image: linear-gradient(to right, black 80%, transparent 100%);
     mask-image: linear-gradient(to right, black 80%, transparent 100%);
+  }
+  .mask-fade-t {
+    -webkit-mask-image: linear-gradient(to top, black 70%, transparent 100%);
+    mask-image: linear-gradient(to top, black 70%, transparent 100%);
+  }
+
+  .shadow-architectural {
+    box-shadow: var(--shadow-lg);
+  }
+  .shadow-architectural-sm {
+    box-shadow: var(--shadow-sm);
   }
 }
 
@@ -186,6 +209,15 @@
 }
 .animate-pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
 
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 8s ease infinite;
+}
+
 ::selection {
   background: hsl(var(--primary) / 0.2);
 }
@@ -194,4 +226,13 @@
 :focus-visible {
   outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

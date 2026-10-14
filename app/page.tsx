@@ -19,6 +19,9 @@ import {
   Upload,
   Sparkles,
   ArrowRight,
+  PackageSearch,
+  GraduationCap,
+  Building2,
 } from 'lucide-react';
 
 const features = [
@@ -40,7 +43,6 @@ const stats = [
 export default function LandingPage() {
   return (
     <div className="relative">
-      {/* Hero */}
       <SpatialHero />
 
       {/* Stats Bar */}
@@ -76,15 +78,18 @@ export default function LandingPage() {
             return (
               <RevealUp key={feature.title} delay={i * 0.08}>
                 <Link href={feature.href}>
-                  <div className="group relative rounded-2xl border border-border/60 bg-card p-6 hover:border-border hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 h-full">
-                    <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 flex items-center justify-center mb-4">
-                      <Icon className="h-6 w-6 text-primary" />
+                  <div className="group relative rounded-2xl border border-border/60 bg-card p-6 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 h-full overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-accent/0 group-hover:from-primary/5 group-hover:to-accent/5 transition-all duration-500" />
+                    <div className="relative">
+                      <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-primary/12 to-accent/12 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <Icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
+                        {feature.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
+                      <ArrowRight className="absolute -top-1 right-0 h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-300" />
                     </div>
-                    <h3 className="font-display text-lg font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {feature.title}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
-                    <ArrowRight className="absolute top-6 right-6 h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </div>
                 </Link>
               </RevealUp>
@@ -148,23 +153,29 @@ export default function LandingPage() {
       >
         <div className="grid md:grid-cols-2 gap-5 mt-12">
           <RevealUp>
-            <div className="rounded-2xl border border-border/60 bg-card p-6 h-full">
-              <HelpCircle className="h-8 w-8 text-primary mb-4" />
-              <h3 className="font-display text-lg font-semibold mb-2">Ask Seniors</h3>
-              <p className="text-sm text-muted-foreground">
-                A Q&A platform for academic questions, club advice, college-life guidance, and study resources.
-                Upvote helpful answers, report spam, and find the best student-generated knowledge.
-              </p>
+            <div className="group relative rounded-2xl border border-border/60 bg-card p-6 h-full overflow-hidden hover:border-primary/30 transition-colors">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative">
+                <HelpCircle className="h-8 w-8 text-primary mb-4" />
+                <h3 className="font-display text-lg font-semibold mb-2">Ask Seniors</h3>
+                <p className="text-sm text-muted-foreground">
+                  A Q&A platform for academic questions, club advice, college-life guidance, and study resources.
+                  Upvote helpful answers, report spam, and find the best student-generated knowledge.
+                </p>
+              </div>
             </div>
           </RevealUp>
           <RevealUp delay={0.1}>
-            <div className="rounded-2xl border border-border/60 bg-card p-6 h-full">
-              <Search className="h-8 w-8 text-primary mb-4" />
-              <h3 className="font-display text-lg font-semibold mb-2">Smart Search</h3>
-              <p className="text-sm text-muted-foreground">
-                Search across resources, events, clubs, opportunities, exams, campus locations, questions,
-                and lost & found — all from one search bar with suggestions and category filters.
-              </p>
+            <div className="group relative rounded-2xl border border-border/60 bg-card p-6 h-full overflow-hidden hover:border-primary/30 transition-colors">
+              <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="relative">
+                <Search className="h-8 w-8 text-accent mb-4" />
+                <h3 className="font-display text-lg font-semibold mb-2">Smart Search</h3>
+                <p className="text-sm text-muted-foreground">
+                  Search across resources, events, clubs, opportunities, exams, campus locations, questions,
+                  and lost & found — all from one search bar with suggestions and category filters.
+                </p>
+              </div>
             </div>
           </RevealUp>
         </div>
@@ -197,8 +208,8 @@ export default function LandingPage() {
             const Icon = item.icon;
             return (
               <RevealUp key={item.title} delay={i * 0.1}>
-                <div className="rounded-2xl border border-border/60 bg-card p-6 h-full">
-                  <Icon className="h-8 w-8 text-primary mb-4" />
+                <div className="group relative rounded-2xl border border-border/60 bg-card p-6 h-full hover:border-primary/30 transition-colors">
+                  <Icon className="h-8 w-8 text-primary mb-4 group-hover:scale-110 transition-transform" />
                   <h3 className="font-display text-base font-semibold mb-2">{item.title}</h3>
                   <p className="text-sm text-muted-foreground">{item.desc}</p>
                 </div>
@@ -233,9 +244,9 @@ export default function LandingPage() {
           <RevealUp delay={0.3}>
             <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/login">
-                <Button size="lg" className="h-12 px-8 text-base rounded-full">
+                <Button size="lg" className="h-12 px-8 text-base rounded-full group">
                   Enter UniSphere
-                  <ArrowRight className="ml-1 h-4 w-4" />
+                  <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
               <Link href="/signup">
@@ -362,11 +373,11 @@ function FeatureSection({
             </RevealUp>
           </div>
           <RevealUp delay={0.1} className={reverse ? 'md:col-start-1 md:row-start-1' : ''}>
-            <div className="relative aspect-square max-w-sm mx-auto rounded-3xl border border-border/40 bg-card overflow-hidden">
+            <div className="relative aspect-square max-w-sm mx-auto rounded-3xl border border-border/40 bg-card overflow-hidden group">
               <div className="absolute inset-0 grid-pattern opacity-20" />
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-accent/10 group-hover:from-primary/15 group-hover:to-accent/15 transition-all duration-500" />
               <div className="relative h-full flex items-center justify-center">
-                <Icon className="h-24 w-24 text-primary/30" />
+                <Icon className="h-24 w-24 text-primary/30 group-hover:scale-110 group-hover:text-primary/40 transition-all duration-500" />
               </div>
               <div className="absolute bottom-6 left-6 right-6">
                 <div className="rounded-xl border border-border/60 bg-card/80 backdrop-blur-md p-4">
